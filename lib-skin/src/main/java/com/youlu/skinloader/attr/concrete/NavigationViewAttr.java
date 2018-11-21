@@ -1,4 +1,4 @@
-package com.youlu.skinloader.attr;
+package com.youlu.skinloader.attr.concrete;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;

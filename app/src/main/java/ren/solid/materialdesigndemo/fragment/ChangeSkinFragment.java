@@ -4,13 +4,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.youlu.skinloader.listener.ILoaderListener;
+import com.youlu.skinloader.load.SkinManager;
+
 import java.io.File;
 
 import ren.solid.library.fragment.base.BaseFragment;
-import ren.solid.materialdesigndemo.R;
 import ren.solid.library.utils.FileUtils;
-import ren.solid.skinloader.listener.ILoaderListener;
-import ren.solid.skinloader.load.SkinManager;
+import ren.solid.materialdesigndemo.R;
 
 /**
  * Created by _SOLID

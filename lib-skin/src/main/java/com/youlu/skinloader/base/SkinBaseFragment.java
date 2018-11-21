@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.youlu.skinloader.attr.DynamicAttr;
+import com.youlu.skinloader.attr.concrete.DynamicAttr;
 import com.youlu.skinloader.listener.IDynamicNewView;
 
 import java.util.ArrayList;

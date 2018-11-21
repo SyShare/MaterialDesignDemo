@@ -2,6 +2,14 @@ package com.youlu.skinloader.attr;
 
 import android.util.Log;
 
+import com.youlu.skinloader.attr.concrete.BackgroundAttr;
+import com.youlu.skinloader.attr.concrete.CollapsingToolbarLayoutAttr;
+import com.youlu.skinloader.attr.concrete.FabButtonAttr;
+import com.youlu.skinloader.attr.concrete.NavigationViewAttr;
+import com.youlu.skinloader.attr.concrete.SkinAttr;
+import com.youlu.skinloader.attr.concrete.TabLayoutAttr;
+import com.youlu.skinloader.attr.concrete.TextColorAttr;
+
 /**
  * Created by _SOLID
  * Date:2016/4/14

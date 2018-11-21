@@ -2,7 +2,7 @@ package com.youlu.skinloader.entity;
 
 import android.view.View;
 
-import com.youlu.skinloader.attr.SkinAttr;
+import com.youlu.skinloader.attr.concrete.SkinAttr;
 import com.youlu.skinloader.util.ListUtils;
 
 import java.util.ArrayList;

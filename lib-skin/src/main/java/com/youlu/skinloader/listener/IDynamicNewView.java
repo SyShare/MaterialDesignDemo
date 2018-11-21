@@ -2,7 +2,7 @@ package com.youlu.skinloader.listener;
 
 import android.view.View;
 
-import com.youlu.skinloader.attr.DynamicAttr;
+import com.youlu.skinloader.attr.concrete.DynamicAttr;
 
 import java.util.List;
 

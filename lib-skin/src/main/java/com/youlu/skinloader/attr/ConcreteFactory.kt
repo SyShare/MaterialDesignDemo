@@ -1,5 +1,7 @@
 package com.youlu.skinloader.attr
 
+import com.youlu.skinloader.attr.concrete.SkinAttr
+
 /**
  * Author by Administrator , Date on 2018/11/21.
  * PS: Not easy to write code, please indicate.
@@ -7,7 +9,7 @@ package com.youlu.skinloader.attr
 class ConcreteFactory : Factoty() {
 
 
-    override fun <T : SkinAttr> createSkinAttr(tClass: Class<T>?): T {
+    override fun <T : SkinAttr?> createSkinAttr(tClass: Class<T>?): T? {
         var product: SkinAttr? = null
         try {
 

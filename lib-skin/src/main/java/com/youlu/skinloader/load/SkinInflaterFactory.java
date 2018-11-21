@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.youlu.skinloader.attr.AttrFactoryKt;
-import com.youlu.skinloader.attr.DynamicAttr;
-import com.youlu.skinloader.attr.SkinAttr;
+import com.youlu.skinloader.attr.concrete.DynamicAttr;
+import com.youlu.skinloader.attr.concrete.SkinAttr;
 import com.youlu.skinloader.config.SkinConfig;
 import com.youlu.skinloader.entity.SkinItem;
 import com.youlu.skinloader.util.L;

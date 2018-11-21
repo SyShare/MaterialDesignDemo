@@ -1,7 +1,8 @@
 package ren.solid.library;
 
+import com.youlu.skinloader.base.SkinBaseApplication;
+
 import ren.solid.library.utils.ToastUtils;
-import ren.solid.skinloader.base.SkinBaseApplication;
 
 /**
  * Created by _SOLID
@@ -11,14 +12,14 @@ import ren.solid.skinloader.base.SkinBaseApplication;
 public class SolidApplication extends SkinBaseApplication {
     private static SolidApplication mInstance;
 
+    public static SolidApplication getInstance() {
+        return mInstance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         mInstance = this;
         ToastUtils.init(this);
-    }
-
-    public static SolidApplication getInstance() {
-        return mInstance;
     }
 }

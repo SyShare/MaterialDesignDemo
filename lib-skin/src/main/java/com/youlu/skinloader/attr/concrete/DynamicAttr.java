@@ -1,4 +1,6 @@
-package ren.solid.skinloader.attr;
+package com.youlu.skinloader.attr.concrete;
+
+import com.youlu.skinloader.attr.AttrFactoryKt;
 
 /**
  * Created by _SOLID
@@ -7,7 +9,7 @@ package ren.solid.skinloader.attr;
  */
 public class DynamicAttr {
     /**
-     * attr name , defined from {@link AttrFactory} :<br>
+     * attr name , defined from {@link AttrFactoryKt} :<br>
      * should be
      * <li> AttrFactory.BACKGROUND
      * <li> AttrFactory.TEXT_COLOR <br>

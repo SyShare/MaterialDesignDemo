@@ -1,11 +1,11 @@
-package ren.solid.skinloader.attr;
+package com.youlu.skinloader.attr.concrete;
 
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.view.View;
 
-import ren.solid.skinloader.load.SkinManager;
-import ren.solid.skinloader.util.L;
+import com.youlu.skinloader.load.SkinManager;
+import com.youlu.skinloader.util.L;
 
 /**
  * Created by _SOLID

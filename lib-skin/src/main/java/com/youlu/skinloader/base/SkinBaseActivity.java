@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.youlu.skinloader.attr.DynamicAttr;
+import com.youlu.skinloader.attr.concrete.DynamicAttr;
 import com.youlu.skinloader.listener.IDynamicNewView;
 import com.youlu.skinloader.listener.ISkinUpdate;
 import com.youlu.skinloader.load.SkinInflaterFactory;

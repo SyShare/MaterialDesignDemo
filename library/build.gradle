@@ -42,5 +42,5 @@ dependencies {
     implementation depends.rxandroid2()
     implementation depends.rxjava2()
 
-    implementation project(':lib-skin')
+    api project(':lib-skin')
     }

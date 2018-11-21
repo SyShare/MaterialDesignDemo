@@ -1,10 +1,10 @@
-package ren.solid.skinloader.attr;
+package com.youlu.skinloader.attr.concrete;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import ren.solid.skinloader.load.SkinManager;
-import ren.solid.skinloader.util.L;
+import com.youlu.skinloader.load.SkinManager;
 
 /**
  * Created by _SOLID
@@ -17,7 +17,7 @@ public class TextColorAttr extends SkinAttr {
         if (view instanceof TextView) {
             TextView tv = (TextView) view;
             if (RES_TYPE_NAME_COLOR.equals(attrValueTypeName)) {
-                L.i("applyAttr", "TextColorAttr");
+                Log.i("applyAttr", "TextColorAttr");
                 tv.setTextColor(SkinManager.getInstance().convertToColorStateList(attrValueRefId));
             }
         }

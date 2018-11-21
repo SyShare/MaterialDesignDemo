@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import ren.solid.skinloader.base.SkinBaseActivity;
+import com.youlu.skinloader.base.SkinBaseActivity;
 
 /**
  * Created by _SOLID
@@ -12,7 +12,7 @@ import ren.solid.skinloader.base.SkinBaseActivity;
  * Time:9:40
  */
 public abstract class BaseActivity extends SkinBaseActivity {
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

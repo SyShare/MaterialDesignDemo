@@ -1,10 +1,10 @@
-package ren.solid.skinloader.attr;
+package com.youlu.skinloader.attr.concrete;
 
 import android.content.res.ColorStateList;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 
-import ren.solid.skinloader.load.SkinManager;
+import com.youlu.skinloader.load.SkinManager;
 
 /**
  * Created by _SOLID
