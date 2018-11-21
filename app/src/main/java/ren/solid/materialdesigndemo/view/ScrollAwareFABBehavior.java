@@ -77,16 +77,19 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
                     .setInterpolator(INTERPOLATOR)
                     .withLayer()
                     .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
                         public void onAnimationStart(View view) {
                             ScrollAwareFABBehavior.this.mIsAnimatingOut = true;
                         }
 
 
+                        @Override
                         public void onAnimationCancel(View view) {
                             ScrollAwareFABBehavior.this.mIsAnimatingOut = false;
                         }
 
 
+                        @Override
                         public void onAnimationEnd(View view) {
                             ScrollAwareFABBehavior.this.mIsAnimatingOut = false;
                             view.setVisibility(View.GONE);
@@ -95,15 +98,17 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
                     .start();
         } else {
             Animation anim = AnimationUtils.loadAnimation(button.getContext(),
-                    android.support.design.R.anim.design_fab_out);
+                    android.support.design.R.anim.abc_fade_out);
             anim.setInterpolator(INTERPOLATOR);
             anim.setDuration(200L);
             anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
                 public void onAnimationStart(Animation animation) {
                     ScrollAwareFABBehavior.this.mIsAnimatingOut = true;
                 }
 
 
+                @Override
                 public void onAnimationEnd(Animation animation) {
                     ScrollAwareFABBehavior.this.mIsAnimatingOut = false;
                     button.setVisibility(View.GONE);
@@ -133,7 +138,7 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
                     .start();
         } else {
             Animation anim = AnimationUtils.loadAnimation(button.getContext(),
-                    android.support.design.R.anim.design_fab_in);
+                    android.support.design.R.anim.abc_fade_in);
             anim.setDuration(200L);
             anim.setInterpolator(INTERPOLATOR);
             button.startAnimation(anim);

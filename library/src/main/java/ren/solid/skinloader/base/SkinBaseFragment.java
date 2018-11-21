@@ -47,7 +47,8 @@ public class SkinBaseFragment extends Fragment implements IDynamicNewView {
         dynamicAddView(view, pDAttrs);
     }
 
-    public LayoutInflater getLayoutInflater(Bundle savedInstanceState) {
+    @Override
+    public LayoutInflater onGetLayoutInflater(Bundle savedInstanceState) {
         LayoutInflater result = getActivity().getLayoutInflater();
         return result;
     }

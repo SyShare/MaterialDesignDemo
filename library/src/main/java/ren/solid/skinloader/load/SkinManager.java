@@ -8,18 +8,28 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import ren.solid.skinloader.util.L;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import ren.solid.skinloader.config.SkinConfig;
 import ren.solid.skinloader.listener.ILoaderListener;
 import ren.solid.skinloader.listener.ISkinLoader;
 import ren.solid.skinloader.listener.ISkinUpdate;
+import ren.solid.skinloader.util.L;
 
 /**
  * Created by _SOLID
@@ -29,8 +39,7 @@ import ren.solid.skinloader.listener.ISkinUpdate;
 public class SkinManager implements ISkinLoader {
 
     private List<ISkinUpdate> mSkinObservers;
-    private static volatile SkinManager mInstance;
-    private Context context;
+    private SoftReference<Context> softReference;
     private Resources mResources;
     private boolean isDefaultSkin = false;//当前的皮肤是否是默认的
     private String skinPackageName;//皮肤的包名
@@ -39,8 +48,12 @@ public class SkinManager implements ISkinLoader {
     private SkinManager() {
     }
 
+    public static SkinManager getInstance() {
+        return SingleHolder.INSTANCE;
+    }
+
     public void init(Context ctx) {
-        context = ctx.getApplicationContext();
+        softReference = new SoftReference<>(ctx.getApplicationContext());
     }
 
     public int getColorPrimaryDark() {
@@ -86,22 +99,15 @@ public class SkinManager implements ISkinLoader {
      * 恢复到默认主题
      */
     public void restoreDefaultTheme() {
+        if (softReference.get() == null) {
+            return;
+        }
+        Context context = softReference.get();
         SkinConfig.saveSkinPath(context, SkinConfig.DEFALT_SKIN);
         isDefaultSkin = true;
         mResources = context.getResources();
         skinPackageName = context.getPackageName();
         notifySkinUpdate();
-    }
-
-    public static SkinManager getInstance() {
-        if (mInstance == null) {
-            synchronized (SkinManager.class) {
-                if (mInstance == null) {
-                    mInstance = new SkinManager();
-                }
-            }
-        }
-        return mInstance;
     }
 
     @Override
@@ -116,7 +122,9 @@ public class SkinManager implements ISkinLoader {
 
     @Override
     public void detach(ISkinUpdate observer) {
-        if (mSkinObservers == null) return;
+        if (mSkinObservers == null) {
+            return;
+        }
         if (mSkinObservers.contains(observer)) {
             mSkinObservers.remove(observer);
         }
@@ -131,11 +139,19 @@ public class SkinManager implements ISkinLoader {
     }
 
     public void load() {
+        if (softReference.get() == null) {
+            return;
+        }
+        Context context = softReference.get();
         String skin = SkinConfig.getCustomSkinPath(context);
         load(skin, null);
     }
 
     public void load(ILoaderListener callback) {
+        if (softReference.get() == null) {
+            return;
+        }
+        Context context = softReference.get();
         String skin = SkinConfig.getCustomSkinPath(context);
         if (SkinConfig.isDefaultSkin(context)) {
             return;
@@ -143,27 +159,24 @@ public class SkinManager implements ISkinLoader {
         load(skin, callback);
     }
 
-    public void load(String skinPackagePath, final ILoaderListener callback) {
+    public void load(final String skinPkgPath, final ILoaderListener callback) {
 
-        new AsyncTask<String, Void, Resources>() {
 
-            protected void onPreExecute() {
-                if (callback != null) {
-                    callback.onStart();
-                }
-            }
-
+        Observable.create(new ObservableOnSubscribe<Resources>() {
             @Override
-            protected Resources doInBackground(String... params) {
+            public void subscribe(ObservableEmitter<Resources> emitter) throws Exception {
                 try {
-                    if (params.length == 1) {
-                        String skinPkgPath = params[0];
+                    if (!TextUtils.isEmpty(skinPkgPath)) {
                         Log.i("loadSkin", skinPkgPath);
                         File file = new File(skinPkgPath);
-                        if (file == null || !file.exists()) {
-                            return null;
+                        if (!file.exists()) {
+                            emitter.onNext(null);
+                            return;
                         }
-
+                        if (softReference.get() == null) {
+                            return;
+                        }
+                        Context context = softReference.get();
                         PackageManager mPm = context.getPackageManager();
                         PackageInfo mInfo = mPm.getPackageArchiveInfo(skinPkgPath, PackageManager.GET_ACTIVITIES);
                         skinPackageName = mInfo.packageName;
@@ -180,31 +193,122 @@ public class SkinManager implements ISkinLoader {
 
                         skinPath = skinPkgPath;
                         isDefaultSkin = false;
-                        return skinResource;
+                        emitter.onNext(skinResource);
+                        emitter.onComplete();
                     }
-                    return null;
+
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return null;
+                    emitter.onError(e);
                 }
+
             }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Resources>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        if (callback != null) {
+                            callback.onStart();
+                        }
+                    }
 
-            protected void onPostExecute(Resources result) {
-                mResources = result;
+                    @Override
+                    public void onNext(@Nullable Resources resources) {
+                        mResources = resources;
+                    }
 
-                if (mResources != null) {
-                    if (callback != null) callback.onSuccess();
-                    notifySkinUpdate();
-                } else {
-                    isDefaultSkin = true;
-                    if (callback != null) callback.onFailed();
-                }
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        isDefaultSkin = true;
+                        if (callback != null) {
+                            callback.onFailed();
+                        }
+                    }
 
-        }.execute(skinPackagePath);
+                    @Override
+                    public void onComplete() {
+                        if (mResources != null) {
+                            if (callback != null) {
+                                callback.onSuccess();
+                            }
+                            notifySkinUpdate();
+                        } else {
+                            isDefaultSkin = true;
+                            if (callback != null) {
+                                callback.onFailed();
+                            }
+                        }
+                    }
+                });
+
+
+//        new AsyncTask<String, Void, Resources>() {
+//
+//            @Override
+//            protected void onPreExecute() {
+//                if (callback != null) {
+//                    callback.onStart();
+//                }
+//            }
+//
+//            @Override
+//            protected Resources doInBackground(String... params) {
+//                try {
+//                    if (params.length == 1) {
+//                        String skinPkgPath = params[0];
+//                        Log.i("loadSkin", skinPkgPath);
+//                        File file = new File(skinPkgPath);
+//                        if (file == null || !file.exists()) {
+//                            return null;
+//                        }
+//
+//                        PackageManager mPm = context.getPackageManager();
+//                        PackageInfo mInfo = mPm.getPackageArchiveInfo(skinPkgPath, PackageManager.GET_ACTIVITIES);
+//                        skinPackageName = mInfo.packageName;
+//
+//                        AssetManager assetManager = AssetManager.class.newInstance();
+//                        Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
+//                        addAssetPath.invoke(assetManager, skinPkgPath);
+//
+//
+//                        Resources superRes = context.getResources();
+//                        Resources skinResource = new Resources(assetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
+//
+//                        SkinConfig.saveSkinPath(context, skinPkgPath);
+//
+//                        skinPath = skinPkgPath;
+//                        isDefaultSkin = false;
+//                        return skinResource;
+//                    }
+//                    return null;
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    return null;
+//                }
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Resources result) {
+//                mResources = result;
+//
+//                if (mResources != null) {
+//                    if (callback != null) callback.onSuccess();
+//                    notifySkinUpdate();
+//                } else {
+//                    isDefaultSkin = true;
+//                    if (callback != null) callback.onFailed();
+//                }
+//            }
+//
+//        }.execute(skinPackagePath);
     }
 
     public int getColor(int resId) {
+        if (softReference.get() == null) {
+            return 0;
+        }
+        Context context = softReference.get();
         int originColor = context.getResources().getColor(resId);
         if (mResources == null || isDefaultSkin) {
             return originColor;
@@ -226,6 +330,10 @@ public class SkinManager implements ISkinLoader {
     }
 
     public Drawable getDrawable(int resId) {
+        if (softReference.get() == null) {
+            return null;
+        }
+        Context context = softReference.get();
         Drawable originDrawable = context.getResources().getDrawable(resId);
         if (mResources == null || isDefaultSkin) {
             return originDrawable;
@@ -263,6 +371,10 @@ public class SkinManager implements ISkinLoader {
         if (mResources == null || isDefaultSkin) {
             isExtendSkin = false;
         }
+        if (softReference.get() == null) {
+            return null;
+        }
+        Context context = softReference.get();
 
         String resName = context.getResources().getResourceEntryName(resId);
         if (isExtendSkin) {
@@ -298,5 +410,9 @@ public class SkinManager implements ISkinLoader {
 
         int[][] states = new int[1][1];
         return new ColorStateList(states, new int[]{context.getResources().getColor(resId)});
+    }
+
+    private static final class SingleHolder {
+        private static final SkinManager INSTANCE = new SkinManager();
     }
 }

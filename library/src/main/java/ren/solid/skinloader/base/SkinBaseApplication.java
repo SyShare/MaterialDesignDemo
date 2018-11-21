@@ -11,6 +11,7 @@ import ren.solid.skinloader.load.SkinManager;
  */
 public class SkinBaseApplication extends Application {
 
+    @Override
     public void onCreate() {
         super.onCreate();
 

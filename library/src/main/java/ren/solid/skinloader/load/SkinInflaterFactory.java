@@ -2,7 +2,6 @@ package ren.solid.skinloader.load;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v4.view.LayoutInflaterFactory;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,12 +10,12 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import ren.solid.skinloader.attr.AttrFactory;
 import ren.solid.skinloader.attr.DynamicAttr;
 import ren.solid.skinloader.attr.SkinAttr;
-import ren.solid.skinloader.util.L;
-import ren.solid.skinloader.attr.AttrFactory;
 import ren.solid.skinloader.config.SkinConfig;
 import ren.solid.skinloader.entity.SkinItem;
+import ren.solid.skinloader.util.L;
 import ren.solid.skinloader.util.ListUtils;
 
 /**
@@ -27,7 +26,7 @@ import ren.solid.skinloader.util.ListUtils;
  * 自定义的InflaterFactory，用来代替默认的InflaterFactory
  * 参考链接：http://willowtreeapps.com/blog/app-development-how-to-get-the-right-layoutinflater/
  */
-public class SkinInflaterFactory implements LayoutInflaterFactory {
+public class SkinInflaterFactory implements LayoutInflater.Factory2 {
 
     private static String TAG = "SkinInflaterFactory";
     /**
@@ -35,11 +34,15 @@ public class SkinInflaterFactory implements LayoutInflaterFactory {
      */
     private List<SkinItem> mSkinItems = new ArrayList<SkinItem>();
 
+//
+//    @Override
+//    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+//
+//
+//    }
 
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-
-        // 检测当前View是否有更换皮肤的需求
         boolean isSkinEnable = attrs.getAttributeBooleanValue(SkinConfig.NAMESPACE, SkinConfig.ATTR_SKIN_ENABLE, false);
         if (!isSkinEnable) {
             return null;//返回空就使用默认的InflaterFactory
@@ -50,6 +53,12 @@ public class SkinInflaterFactory implements LayoutInflaterFactory {
         }
         parseSkinAttr(context, attrs, view);
         return view;
+    }
+
+    //SDK >=11
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs) {
+        return onCreateView(null, name, context, attrs);
     }
 
     /**
@@ -215,4 +224,6 @@ public class SkinInflaterFactory implements LayoutInflaterFactory {
         skinItem.apply();
         addSkinView(skinItem);
     }
+
+
 }

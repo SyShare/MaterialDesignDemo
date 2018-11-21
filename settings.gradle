@@ -1,1 +1,1 @@
-include ':app', ':skin_brown', ':skin_black', ':library'
+include ':app', ':skin_brown', ':skin_black', ':library', ':lib-skin'
