@@ -35,12 +35,9 @@ public class NavigationViewAttr extends SkinAttr {
         int statePressed = android.R.attr.state_checked;
         int stateChecked = android.R.attr.state_checked;
         int[][] state = {{statePressed}, {-statePressed}, {stateChecked}, {-stateChecked}};
-        int color1 = color;
         int color2 = Color.parseColor("#6E6E6E");
-        int color3 = color;
         int color4 = Color.parseColor("#6E6E6E");
-        int[] colors = {color1, color2, color3, color4};
-        ColorStateList colorStateList = new ColorStateList(state, colors);
-        return colorStateList;
+        int[] colors = {color, color2, color, color4};
+        return new ColorStateList(state, colors);
     }
 }

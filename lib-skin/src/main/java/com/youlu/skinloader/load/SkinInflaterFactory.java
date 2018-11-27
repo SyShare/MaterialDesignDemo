@@ -32,14 +32,7 @@ public class SkinInflaterFactory implements LayoutInflater.Factory2 {
     /**
      * 存储那些有皮肤更改需求的View及其对应的属性的集合
      */
-    private List<SkinItem> mSkinItems = new ArrayList<SkinItem>();
-
-//
-//    @Override
-//    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-//
-//
-//    }
+    private List<SkinItem> mSkinItems = new ArrayList<>();
 
     @Override
     public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
@@ -104,18 +97,23 @@ public class SkinInflaterFactory implements LayoutInflater.Factory2 {
      * @param view
      */
     private void parseSkinAttr(Context context, AttributeSet attrs, View view) {
-        List<SkinAttr> viewAttrs = new ArrayList<SkinAttr>();//存储View可更换皮肤属性的集合
-        for (int i = 0; i < attrs.getAttributeCount(); i++) {//遍历当前View的属性
-            String attrName = attrs.getAttributeName(i);//属性名
-            String attrValue = attrs.getAttributeValue(i);//属性值
+        //存储View可更换皮肤属性的集合
+        List<SkinAttr> viewAttrs = new ArrayList<SkinAttr>();
+        for (int i = 0; i < attrs.getAttributeCount(); i++) {
+            String attrName = attrs.getAttributeName(i);
+            String attrValue = attrs.getAttributeValue(i);
             if (!AttrFactoryKt.isSupportedAttr(attrName)) {
                 continue;
             }
-            if (attrValue.startsWith("@")) {//也就是引用类型，形如@color/red
+            //也就是引用类型，形如@color/red
+            if (attrValue.startsWith("@")) {
                 try {
-                    int id = Integer.parseInt(attrValue.substring(1));//资源的id
-                    String entryName = context.getResources().getResourceEntryName(id);//入口名，例如text_color_selector
-                    String typeName = context.getResources().getResourceTypeName(id);//类型名，例如color、background
+                    //资源的id
+                    int id = Integer.parseInt(attrValue.substring(1));
+                    //入口名，例如text_color_selector
+                    String entryName = context.getResources().getResourceEntryName(id);
+                    //类型名，例如color、background
+                    String typeName = context.getResources().getResourceTypeName(id);
                     SkinAttr mSkinAttr = AttrFactoryKt.get(attrName, id, entryName, typeName);
                     L.i("parseSkinAttr", "view:" + view.getClass().getSimpleName());
                     L.i("parseSkinAttr", "attrName:" + attrName + " | attrValue:" + attrValue);
@@ -136,8 +134,9 @@ public class SkinInflaterFactory implements LayoutInflater.Factory2 {
             SkinItem skinItem = new SkinItem();
             skinItem.view = view;
             skinItem.attrs = viewAttrs;
-            mSkinItems.add(skinItem);
-            if (SkinManager.getInstance().isExternalSkin()) {//如果当前皮肤来自于外部
+            addSkinView(skinItem);
+            //如果当前皮肤来自于外部
+            if (SkinManager.getInstance().isExternalSkin()) {
                 skinItem.apply();
             }
         }
@@ -174,23 +173,22 @@ public class SkinInflaterFactory implements LayoutInflater.Factory2 {
         }
     }
 
-    public void addSkinView(SkinItem item) {
+    private void addSkinView(SkinItem item) {
         mSkinItems.add(item);
     }
 
     /**
      * 动态添加那些有皮肤更改需求的View，及其对应的属性
      *
-     * @param context
-     * @param view
+     * @param context        上下文
+     * @param view           可变view
      * @param attrName       属性名
      * @param attrValueResId 属性资源id
      */
     public void dynamicAddSkinEnableView(Context context, View view, String attrName, int attrValueResId) {
-        int id = attrValueResId;
-        String entryName = context.getResources().getResourceEntryName(id);
-        String typeName = context.getResources().getResourceTypeName(id);
-        SkinAttr mSkinAttr = AttrFactoryKt.get(attrName, id, entryName, typeName);
+        String entryName = context.getResources().getResourceEntryName(attrValueResId);
+        String typeName = context.getResources().getResourceTypeName(attrValueResId);
+        SkinAttr mSkinAttr = AttrFactoryKt.get(attrName, attrValueResId, entryName, typeName);
         SkinItem skinItem = new SkinItem();
         skinItem.view = view;
         List<SkinAttr> viewAttrs = new ArrayList<SkinAttr>();

@@ -36,6 +36,11 @@ public abstract class BaseActivity extends SkinBaseActivity {
 
     protected abstract int setLayoutResourceID();
 
+    @Override
+    protected boolean enableResponseOnSkin() {
+        return false;
+    }
+
     protected <T extends View> T $(int id) {
         return (T) super.findViewById(id);
     }

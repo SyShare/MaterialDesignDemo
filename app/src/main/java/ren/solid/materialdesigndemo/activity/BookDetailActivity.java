@@ -82,6 +82,11 @@ public class BookDetailActivity extends BaseActivity {
     }
 
     @Override
+    protected boolean enableResponseOnSkin() {
+        return true;
+    }
+
+    @Override
     protected void setUpData() {
 
         HttpClientManager.getData(mUrl, new JsonHttpCallBack<BookBean>() {

@@ -38,12 +38,27 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SkinManager implements ISkinLoader {
 
-    private List<ISkinUpdate> mSkinObservers;
+    /**
+     * 当前上下文应用
+     */
     private SoftReference<Context> softReference;
+    /**
+     * 观察者集合
+     */
+    private List<ISkinUpdate> mSkinObservers;
     private Resources mResources;
-    private boolean isDefaultSkin = false;//当前的皮肤是否是默认的
-    private String skinPackageName;//皮肤的包名
-    private String skinPath;//皮肤路径
+    /**
+     * 当前的皮肤是否是默认的
+     */
+    private boolean isDefaultSkin = false;
+    /**
+     * 皮肤的包名
+     */
+    private String skinPackageName;
+    /**
+     * 皮肤路径
+     */
+    private String skinPath;
 
     private SkinManager() {
     }
@@ -115,7 +130,7 @@ public class SkinManager implements ISkinLoader {
         if (mSkinObservers == null) {
             mSkinObservers = new ArrayList<>();
         }
-        if (!mSkinObservers.contains(mSkinObservers)) {
+        if (!mSkinObservers.contains(observer)) {
             mSkinObservers.add(observer);
         }
     }
@@ -160,8 +175,6 @@ public class SkinManager implements ISkinLoader {
     }
 
     public void load(final String skinPkgPath, final ILoaderListener callback) {
-
-
         Observable.create(new ObservableOnSubscribe<Resources>() {
             @Override
             public void subscribe(ObservableEmitter<Resources> emitter) throws Exception {
@@ -206,8 +219,11 @@ public class SkinManager implements ISkinLoader {
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Resources>() {
+                    Disposable disposable;
+
                     @Override
                     public void onSubscribe(Disposable d) {
+                        disposable = d;
                         if (callback != null) {
                             callback.onStart();
                         }
@@ -224,6 +240,7 @@ public class SkinManager implements ISkinLoader {
                         if (callback != null) {
                             callback.onFailed();
                         }
+                        dispose(disposable);
                     }
 
                     @Override
@@ -239,8 +256,16 @@ public class SkinManager implements ISkinLoader {
                                 callback.onFailed();
                             }
                         }
+                        dispose(disposable);
                     }
                 });
+    }
+
+    private void dispose(Disposable d){
+        if (d != null
+                && !d.isDisposed()) {
+            d.dispose();
+        }
     }
 
     public int getColor(int resId) {

@@ -1,13 +1,16 @@
 package com.youlu.skinloader.attr
 
 import android.util.Log
+import com.youlu.skinloader.attr.abstractAttr.ConcreteFactory
 import com.youlu.skinloader.attr.concrete.*
 import java.util.*
 
 /**
  * Author by Administrator , Date on 2018/11/21.
  * PS: Not easy to write code, please indicate.
+ * 变为可配置
  */
+
 class AttrFactoryKt {
 
     companion object {
